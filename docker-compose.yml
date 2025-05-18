@@ -1,0 +1,50 @@
+services:
+  db:
+    image: mariadb:10.6
+    container_name: pdns-db
+    environment:
+      MYSQL_ROOT_PASSWORD: zaq1@WSX
+      MYSQL_DATABASE: powerdns
+      MYSQL_USER: pdns
+      MYSQL_PASSWORD: test
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  pdns-auth-master:
+    container_name: pdns-auth
+    build: ./pdns
+    depends_on:
+      - db
+    environment:
+      - PDNS_gmysql_host=db
+      - PDNS_gmysql_user=pdns
+      - PDNS_gmysql_password=test
+      - PDNS_gmysql_dbname=powerdns
+      - PDNS_api_key=supersecretkey
+    ports:
+      - "5300:53/udp"
+      - "5300:53/tcp"
+      - "8081:8081"  # API access for PowerDNS-Admin
+    volumes:
+      - pdns-data:/data
+    restart: always
+  powerdns-admin:
+    container_name: pdns-admin
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    environment:
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://pdns:test@db/powerdnsadmin
+      - PDNS_API_URL=http://pdns-auth-master:8081
+      - PDNS_API_KEY=supersecretkey
+      - ADMIN_PASSWORD=admin
+    ports:
+      - "9191:80"
+    depends_on:
+      - db
+      - pdns-auth-master
+    restart: always
+
+volumes:
+  db-data:
+  pdns-data:
