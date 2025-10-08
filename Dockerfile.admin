@@ -1,0 +1,3 @@
+FROM ngoduykhanh/powerdns-admin:latest
+
+RUN python3 -m pip install --no-cache-dir pymysql
