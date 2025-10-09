@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Exit immediately if a command exits with a non-zero status to prevent unexpected behavior
 set -e
 
 # Optional: print some info
@@ -10,4 +12,4 @@ chown -R $(whoami) /var/run/pdns-recursor
 
 
 # Start pdns_recursor in foreground with proper options for Docker
-exec pdns_recursor --config-dir=/etc/powerdns/ --daemon=no
+pdns_recursor --config-dir=/etc/powerdns/ --daemon=no

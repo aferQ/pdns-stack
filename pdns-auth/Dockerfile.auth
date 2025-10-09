@@ -9,6 +9,9 @@ COPY pdns.conf /etc/powerdns/pdns.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Verify entrypoint.sh is in the right place
+RUN ls -las / | grep entrypoint.sh
+
 EXPOSE 5353/udp 5353/tcp 8081
 
 ENTRYPOINT ["/entrypoint.sh"]
