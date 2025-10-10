@@ -7,6 +7,7 @@ RUN apt-get update && \
     libboost-system-dev libboost-thread-dev libboost-context-dev \
     libboost-test-dev libssl-dev g++ pkg-config python3 python3-venv \
     libluajit-5.1-dev build-essential m4 git dnsutils curl ca-certificates ragel meson virtualenv rustc cargo && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Rust (cargo)
@@ -29,7 +30,5 @@ RUN meson setup builddir && \
 # Copy entrypoint.sh to the correct location
 COPY entrypoint.sh /pdns/entrypoint.sh
 RUN chmod +x /pdns/entrypoint.sh
-
-EXPOSE 53/udp 53/tcp 8081
 
 ENTRYPOINT ["/pdns/entrypoint.sh"]

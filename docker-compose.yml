@@ -29,6 +29,7 @@ services:
       - "8081:8081"  # API access for PowerDNS-Admin
     volumes:
       - pdns-data:/data
+      - ./pdns-auth/pdns.conf:/etc/powerdns/pdns.conf
     restart: always
   powerdns-admin:
     container_name: pdns-admin

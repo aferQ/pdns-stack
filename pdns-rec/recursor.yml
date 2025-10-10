@@ -21,9 +21,9 @@ recursor:
       forwarders:
         - 1.1.1.1
         - 8.8.8.8
-logging:
-  loglevel:
-    - 7
+#logging:
+#  loglevel:
+#    - 7
 
 max-cache-ttl: 86400
 min-cache-ttl: 0
