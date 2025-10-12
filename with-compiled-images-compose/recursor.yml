@@ -1,0 +1,31 @@
+dnssec:
+  validation: off
+
+local-address:
+  - 10.0.0.117
+
+incoming:
+  listen:
+    - 10.0.0.117:53
+  allow_from:
+    - 10.0.0.0/8
+    - 192.168.1.0/24
+dont_query:
+    []
+recursor:
+  forward_zones:
+    - zone: home.fun
+      forwarders:
+        - 5353 10.0.0.117
+    - zone: "."
+      forwarders:
+        - 1.1.1.1
+        - 8.8.8.8
+#logging:
+#  loglevel:
+#    - 7
+
+max-cache-ttl: 86400
+min-cache-ttl: 0
+
+threads: 2
