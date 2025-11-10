@@ -6,7 +6,8 @@ RUN apt-get update && \
     apt-get install -y libboost-dev libboost-filesystem-dev libboost-serialization-dev \
     libboost-system-dev libboost-thread-dev libboost-context-dev \
     libboost-test-dev libssl-dev g++ pkg-config python3 python3-venv \
-    libluajit-5.1-dev build-essential m4 git dnsutils curl ca-certificates ragel meson virtualenv rustc cargo && \
+    libluajit-5.1-dev build-essential m4 git dnsutils curl ca-certificates ragel meson virtualenv rustc cargo \
+    wget dos2unix && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -17,18 +18,21 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Install the latest Meson version
 RUN pip3 install --upgrade meson
 
-# Clone latest pdns and submodules
-RUN git clone --recursive https://github.com/PowerDNS/pdns.git /pdns
+# download pdns, would need to update it manually for new versions
+RUN wget https://downloads.powerdns.com/releases/pdns-recursor-5.3.1.tar.xz
+RUN tar -xvf pdns-recursor-5.3.1.tar.xz
+#RUN git clone --recursive https://github.com/PowerDNS/pdns.git /pdns
 
-WORKDIR pdns/pdns/recursordist/
+WORKDIR pdns-recursor-5.3.1/
 
 # Compile the recursor
 RUN meson setup builddir && \
     meson compile -C builddir -j 2 && \
     meson install -C builddir
 
-# Copy entrypoint.sh to the correct location
-COPY entrypoint.sh /pdns/entrypoint.sh
-RUN chmod +x /pdns/entrypoint.sh
+# Copy entrypoint.sh to the correct location and correct line endings
+COPY entrypoint.sh /entrypoint.sh
+RUN dos2unix /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/pdns/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

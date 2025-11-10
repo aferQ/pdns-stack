@@ -45,7 +45,7 @@ services:
       - db
       - pdns-auth-master
   powerdns-recursor:
-    image: aferq/pdns-rec:v1
+    image: aferq/pdns-rec:v2
     container_name: pdns-rec
     ports:
       - "53:53/udp"
