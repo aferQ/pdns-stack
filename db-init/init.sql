@@ -1,12 +1,3 @@
-CREATE DATABASE IF NOT EXISTS powerdns;
-CREATE DATABASE IF NOT EXISTS powerdnsadmin;
-
-CREATE USER IF NOT EXISTS 'pdns'@'%' IDENTIFIED BY 'test';
-GRANT ALL PRIVILEGES ON powerdns.* TO 'pdns'@'%';
-GRANT ALL PRIVILEGES ON powerdnsadmin.* TO 'pdns'@'%';
-FLUSH PRIVILEGES;
-
--- Paste PowerDNS MySQL schema here (from /usr/share/pdns-backend-mysql/schema.mysql.sql)
 CREATE TABLE domains (
   id                    INT AUTO_INCREMENT,
   name                  VARCHAR(255) NOT NULL,
@@ -99,5 +90,3 @@ CREATE TABLE tsigkeys (
 ) Engine=InnoDB CHARACTER SET 'latin1';
 
 CREATE UNIQUE INDEX namealgoindex ON tsigkeys(name, algorithm);
-
--- Paste PowerDNS-Admin schema here (from powerdns-admin/schema.sql)
