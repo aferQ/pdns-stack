@@ -7,9 +7,5 @@ if ! command -v mysqladmin &> /dev/null; then
     apt-get update && apt-get install -y default-mysql-client
 fi
 
-sudo mkdir /var/lib/powerdns
-sudo sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/share/doc/pdns-backend-sqlite3/schema.sqlite3.sql
-sudo chown -R pdns:pdns /var/lib/powerdns
-
 # Start PowerDNS (assuming it is installed and pdns.conf is in /etc/powerdns/)
 exec pdns_server --daemon=no --guardian=no --control-console --config-dir=/etc/powerdns/

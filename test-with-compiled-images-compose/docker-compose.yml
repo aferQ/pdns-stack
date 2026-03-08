@@ -1,0 +1,74 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: pdns-db
+    environment:
+      - MARIADB_ROOT_PASSWORD=zaq1@WSX
+      - MYSQL_ROOT_HOST=% 
+    volumes:
+      - "./init:/docker-entrypoint-initdb.d/:ro"
+      - "./init/my.cnf:/etc/mysql/conf.d/my.cnf:ro"
+      - db-data:/var/lib/mysql
+    healthcheck:
+        test: ["CMD-SHELL", "mysqladmin ping -h db -uroot -p$${MARIADB_ROOT_PASSWORD} || exit 1"]
+        interval: 5s
+        timeout: 3s
+        retries: 10
+    networks:
+      - pdns-net
+  pdns-auth-master:
+    image: aferq/pdns-auth-test:v1
+    container_name: pdns-auth
+    ports:
+      - "5353:53/udp"
+      - "5353:53/tcp"
+      - "8081:8081/tcp"
+      - "8081:8081/udp"  # API access for PowerDNS-Admin
+    volumes:
+      - pdns-data:/data
+      - ./pdns.conf:/etc/powerdns/pdns.conf
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      pdns-net:
+        ipv4_address: 172.18.0.67
+#        aliases:
+#          - pdns-auth-master
+    restart: always
+  powerdns-admin:
+    image: aferq/pdns-webui-test:v1
+    container_name: pdns-admin
+    environment:
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://pdnsadmin:adminpass@db/powerdnsadmin
+      - PDNS_API_URL=http://pdns-auth-master:8081
+      - PDNS_API_KEY=supersecretkey
+      - SIGNUP_ENABLED=True
+    ports:
+      - "0.0.0.0:9191:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - pdns-net
+    restart: always
+  powerdns-recursor:
+    image: aferq/pdns-rec-test:v1
+    container_name: pdns-rec
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./recursor.yml:/etc/powerdns/recursor.yml
+#    restart: unless-stopped
+    networks:
+    - pdns-net
+#    extra_hosts:
+#    - "pdns-auth-master:172.18.0.4"
+volumes:
+  db-data:
+  pdns-data:
+
+networks:
+  pdns-net: 
+    driver: bridge

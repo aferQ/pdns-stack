@@ -1,0 +1,21 @@
+dnssec:
+  log_bogus: true
+incoming:
+  listen:
+    - 0.0.0.0:53
+recursor:
+  extended_resolution_errors: true
+  system_resolver_interval: 1
+  # system-resolver: true
+  forward_zones:
+    - zone: "home.fun"
+      forwarders:
+        - 172.18.0.67:53
+    - zone: "."
+      forwarders:
+        - 8.8.8.8
+outgoing:
+  source_address:
+    - 0.0.0.0
+logging:
+  loglevel: 6
